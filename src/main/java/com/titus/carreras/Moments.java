@@ -5,15 +5,17 @@
  */
 package com.titus.carreras;
 
+import java.math.BigInteger;
+
 public class Moments {
     
     private String key;
     private String value;
-    private int timestamp;
+    private BigInteger timestamp;
     private String app_id;
     private String source;
 
-    public Moments(String key, String value, int timestamp, String app_id, String source){
+    public Moments(String key, String value, BigInteger timestamp, String app_id, String source){
         this.key = key;
         this.value = value;
         this.timestamp = timestamp;
@@ -37,11 +39,11 @@ public class Moments {
         this.value = value;
     }
 
-    public int getTimestamp() {
+    public BigInteger getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(int timestamp) {
+    public void setTimestamp(BigInteger timestamp) {
         this.timestamp = timestamp;
     }
 

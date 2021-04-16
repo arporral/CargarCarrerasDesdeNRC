@@ -7,7 +7,7 @@ package com.titus.cargarcarreras;
 
 import com.google.gson.Gson;
 import com.titus.carreras.Activities;
-import com.titus.carreras.CarreirasNRC;
+import com.titus.carreras.Matriz;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
@@ -16,8 +16,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.TimeZone;
 
 public class CargarCarreras {
         
@@ -26,34 +28,7 @@ public class CargarCarreras {
     public static void main(String[] args) throws IOException {
         
         Gson gson = new Gson();            
-        Activities acts = null;
- 
-//        FileReader fr = null;
-//        char[] a = new char[70000];
-//        
-//        try {
-//            fr = new FileReader("F:\\activities-0.json");
-//            fr.read(a);
-//        } catch (IOException e) {
-//            System.out.println(e.getMessage());
-//        } finally {
-//            try {
-//                if (null != fr) {
-//                    fr.close();
-//                }
-//            } catch (IOException e2) {
-//                System.out.println(e2.getMessage());
-//            }
-//        }
-//        
-//        StringBuilder sb = new StringBuilder(70000);
-//        //Java for-each loop  
-//        for (char chars : a) {
-//        //appends the string representation of the char array   
-//            sb.append(chars);
-//        }
-//        //the toString() method returns a string that represents data in the sequence  
-//        String fichero = sb.toString();
+        Matriz matriz = null;
 
         File archivo = null;
         FileReader fr = null;
@@ -84,24 +59,24 @@ public class CargarCarreras {
         
 //        System.out.println(fichero);                
                 
-        acts = gson.fromJson(fichero, Activities.class);
-        
+        matriz = gson.fromJson(fichero, Matriz.class);        
+                
         CargarCarreras cc = new CargarCarreras();
 
-        if (acts != null) {
-            cc.insertCarreira(acts);        
+        if (matriz != null) {
+            cc.insertCarreira(matriz);        
         } else {
             System.out.println("Error. no hay datos.");
         }        
     }
 
-    public void insertCarreira(Activities activities) {
+    public void insertCarreira(Matriz matriz) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         
         int num = 0;
         final int batchSize = 50;
-        Iterator it = activities.getCarreirasnrc().iterator();
+        Iterator it = matriz.getActivities().iterator();
         
         tx.begin();
 
@@ -112,14 +87,22 @@ public class CargarCarreras {
                 em.clear();
             }
             
-            CarreirasNRC nrc = (CarreirasNRC) it.next();
+            Activities nrc = (Activities) it.next();
 
 //            Carreiras c = new Carreiras();
 //            c.setFecha(new Date(nrc.getStart_epoch_ms()));            
 //            em.persist(c);
             
-            System.out.println("Fecha = "+ new Date(nrc.getStart_epoch_ms()));
-            System.out.println("Duracion = "+ new Date(nrc.getActive_duration_ms()));
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));            
+            Date fecha = new Date(nrc.getStart_epoch_ms().longValue());
+            System.out.println("Fecha = " + sdf.format(fecha));            
+            
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+            sdf = new SimpleDateFormat("HH:mm:ss");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));  
+            Date duracion = new Date(nrc.getActive_duration_ms().longValue());
+            System.out.println("Duracion = " + sdf.format(duracion));          
 
             num++;
         }
