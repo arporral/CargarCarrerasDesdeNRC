@@ -5,6 +5,7 @@
     <persistence-unit name="carrerasPU" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider> 
         <class>com.titus.carreras.Carreiras</class>
+        <class>com.titus.carreras.Carreirasnrc</class>
         <properties>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/piramboia?useTimezone=true&amp;serverTimezone=UTC&amp;useSSL=false"/>                                                                 
             <property name="jakarta.persistence.jdbc.user" value="arporral"/>
