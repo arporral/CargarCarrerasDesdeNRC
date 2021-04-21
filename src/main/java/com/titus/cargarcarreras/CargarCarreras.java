@@ -7,79 +7,77 @@ package com.titus.cargarcarreras;
 
 import com.google.gson.Gson;
 import com.titus.carreras.Activities;
-import com.titus.carreras.Carreirasnrc;
 import com.titus.carreras.Matriz;
 import com.titus.carreras.Summaries;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.Persistence;
+import com.titus.tablas.Carreirasnrc;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.TimeZone;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
+
 
 public class CargarCarreras {
 
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("carrerasPU");
+    static int num = 1;    
 
     public static void main(String[] args) throws IOException {
 
         Gson gson = new Gson();
-        Matriz matriz = null;
+        Matriz matriz = null;        
 
         File archivo = null;
         FileReader fr = null;
         BufferedReader br = null;
         String fichero = null;
 
-        try {
-            // Apertura del fichero y creacion de BufferedReader para poder
-            // hacer una lectura comoda (disponer del metodo readLine()).
-            archivo = new File("F:\\ANALISIS Y PROGRAMACION\\Programas java\\CargarCarrerasDesdeNRC\\resources\\activities.json");
-            fr = new FileReader(archivo);
-            br = new BufferedReader(fr);
+        try {           
+            archivo = new File("F:\\ANALISIS Y PROGRAMACION\\Programas java\\CargarCarrerasDesdeNRC\\ficheros\\activities.json");
+            
+            // utilizo la clase InputStreamReader para poder aplicar el charset "utf-8" que me permite obtener los acentos correctamente
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(archivo), "utf-8"));
 
             // Lectura del fichero
             while ((fichero = br.readLine()) != null) {
                 matriz = gson.fromJson(fichero, Matriz.class);
-
-                CargarCarreras cc = new CargarCarreras();
-
+                
                 if (matriz != null) {
-                    cc.insertCarreira(matriz);
+                    CargarCarreras cc = new CargarCarreras(matriz);
                 } else {
                     System.out.println("Error. no hay datos.");
                 }
             }
         } catch (IOException e) {
-        } finally {
-            // En el finally cerramos el fichero, para asegurarnos
-            // que se cierra tanto si todo va bien como si salta 
-            // una excepcion.
+        } finally {            
             try {
                 if (null != fr) {
                     fr.close();
+                    System.out.println("Se han insertado " + num + " registros en la tabla.");
                 }
             } catch (IOException e2) {
             }
         }
     }
 
-    public void insertCarreira(Matriz matriz) {
+    public CargarCarreras(Matriz matriz) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
-
-        int num = 0;
+        
         final int batchSize = 50;
         Iterator it = matriz.getActivities().iterator();
 
-        tx.begin();
-
+        tx.begin();              
+        
         while (it.hasNext()) {
             if (num > 0 && num % batchSize == 0) {
                 tx.commit();
@@ -157,7 +155,6 @@ public class CargarCarreras {
             num++;
         }
         tx.commit();
-        em.close();
-        System.out.println("Se han insertado " + num + " en la tabla Carreirasnrc.");
+        em.close();        
     }
 }

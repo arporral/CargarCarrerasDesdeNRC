@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.titus.carreras;
+package com.titus.tablas;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -47,7 +47,7 @@ public class Carreirasnrc implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Basic(optional = false)
     @Column(name = "num_sec")
     private Integer numSec;
@@ -229,7 +229,7 @@ public class Carreirasnrc implements Serializable {
 
     @Override
     public String toString() {
-        return "com.titus.carreras.Carreirasnrc[ numSec=" + numSec + " ]";
+        return "com.titus.tablas.Carreirasnrc[ numSec=" + numSec + " ]";
     }
     
 }
