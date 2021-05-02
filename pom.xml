@@ -76,6 +76,11 @@
             <version>2.7.7</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>javax.persistence-api</artifactId>
+            <version>2.2</version>
+        </dependency>
     </dependencies>
     <properties>
         <eclipselink.version>3.0.0</eclipselink.version>

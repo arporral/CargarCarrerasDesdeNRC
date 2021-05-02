@@ -18,7 +18,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TimeZone;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -66,32 +68,65 @@ public class CargarCarreras {
                 }
             } catch (IOException e2) {
             }
-        }
+        }              
     }
 
     public CargarCarreras(Matriz matriz) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         
-        final int batchSize = 50;
+        Map<String, String> sensa = new HashMap<>();         
+        sensa.put("TIRED", "Cansado");
+        sensa.put("SO_SO", "Normal");
+        sensa.put("GREAT", "Bien");
+        sensa.put("UNSTOPPABLE", "Imparable");
+        sensa.put("AMPED", "Sensacional");
+ 
+        Map<String, String> tiempo = new HashMap<>();         
+        tiempo.put("CLOUDY", "Nublado");
+        tiempo.put("AMPED", "Sensacional");
+        tiempo.put("RAINY", "Lluvioso"); 
+        tiempo.put("SUNNY", "Soleado");
+        tiempo.put("PARTLY_SUNNY", "Parcialmente soleado");
+        tiempo.put("CLEAR_NIGHT", "Noche clara");
+        tiempo.put("FOG", "Niebla");
+        tiempo.put("PARTLY_CLOUDY_NIGHT", "Noche parcialmente nubosa");
+        
+        Map<String, String> firme = new HashMap<>();         
+        firme.put("ROAD", "Carretera");
+        firme.put("TRAIL", "Trail");
+        firme.put("AMPED", "Sensacional");
+        firme.put("BEACH", "Playa");
+        firme.put("TRACK", "Pista");
+        
+        Map<String, String> tenis = new HashMap<>();              
+        tenis.put("288e8781-fc59-435b-8e95-e66c443596f1", "Guays");
+        tenis.put("8e8673c9-045e-46fc-9725-ecc907bf991c", "Adidas boost");
+        tenis.put("b01d7eb5-521c-45eb-adcc-c0e49e85c35d", "Brooks Glycerin 17 negras");
+        tenis.put("cb99af73-8e9d-459b-915b-7d0e0cd71a70", "Basket");
+        tenis.put("dd08460d-7e70-40b4-bd16-0821c6bb464b", "Blancos cutres");        
+        tenis.put("e3946771-6e12-4e06-98cb-f96f6b63d87e", "Mizuno verdes");
+        tenis.put("e5c5170f-3e54-4034-957e-d4efea5022ed", "Brooks Glycerin 18 azules");
+        tenis.put("ee85de5c-c6da-42b1-951c-ce7fcb137549", "Mizuno azul-limón");
+        tenis.put("f61c4505-90e9-473f-8f02-792125e7081c", "Adidas booster azules");
+ 
         Iterator it = matriz.getActivities().iterator();
 
         tx.begin();              
         
-        while (it.hasNext()) {
-            if (num > 0 && num % batchSize == 0) {
-                tx.commit();
-                tx.begin();
-                em.clear();
-            }
-
+        while (it.hasNext()) {                                 
             Activities nrc = (Activities) it.next();
 
             // Fecha
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            //DateTimeFormatter formatEurope = DateTimeFormatter.ofPattern("yyyy-MM-dd");            
+            //LocalDate fecha = LocalDate.parse(formatEurope.format(new Date(nrc.getStart_epoch_ms().longValue())), formatEurope);
+            //LocalDate fecha = Instant.ofEpochMilli(nrc.getStart_epoch_ms().longValue()).atZone(ZoneId.systemDefault()).toLocalDate();
+            //LocalDate fecha = Instant.ofEpochMilli(nrc.getStart_epoch_ms().longValue()).atZone(ZoneId.of("UTC")).toLocalDate();
+            //System.out.println("Fecha = " + sdf.format(fecha));
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd");
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date fecha = new Date(nrc.getStart_epoch_ms().longValue());
-            System.out.println("Fecha = " + sdf.format(fecha));
+            System.out.println("Fecha = " + fecha);
 
             // Duracion
 //            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
@@ -128,7 +163,28 @@ public class CargarCarreras {
             String terreno = nrc.getTags().getTerrain();
             String clima = (nrc.getTags().getWeather() == null) ? nrc.getTags().getComNikeWeather() : nrc.getTags().getWeather();
             String temperatura = (nrc.getTags().getTemperature() == null) ? nrc.getTags().getComNikeTemperature() : nrc.getTags().getTemperature();
-
+            
+            for (String key : sensa.keySet()) {
+                if (sensaciones != null && key.equals(sensaciones.toUpperCase())){
+                    sensaciones = sensa.get(key);
+                }
+            }
+            for (String key : tiempo.keySet()) {
+                if (clima != null && key.equals(clima.toUpperCase())){
+                    clima = tiempo.get(key);
+                }
+            }
+            for (String key : firme.keySet()) {
+                if (terreno != null && key.equals(terreno.toUpperCase())){
+                    terreno = firme.get(key);
+                }
+            }
+            for (String key : tenis.keySet()) {
+                if (calzado != null && key.equals(calzado)){
+                    calzado = tenis.get(key);
+                }
+            }
+            
             System.out.println("Nombre = " + nombre);
             System.out.println("Sensaciones = " + sensaciones);
             System.out.println("Calzado = " + calzado);
@@ -150,9 +206,13 @@ public class CargarCarreras {
             c.setTemperatura(temperatura);
             c.setTerreno(terreno);
             
-            em.persist(c);            
-
+            em.persist(c);              
+            
             num++;
+            
+            tx.commit();
+            tx.begin();
+            em.clear();
         }
         tx.commit();
         em.close();        

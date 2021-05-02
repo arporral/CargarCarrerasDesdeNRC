@@ -6,9 +6,11 @@
 package com.titus.tablas;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -47,14 +49,15 @@ public class Carreirasnrc implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "num_sec")
     private Integer numSec;
     @Basic(optional = false)
-    @Column(name = "fecha")
-    @Temporal(TemporalType.DATE)
+    @Column(name = "fecha")   
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
+//    private LocalDate fecha;
     @Column(name = "duracion")
     @Temporal(TemporalType.TIME)
     private Date duracion;
@@ -221,10 +224,7 @@ public class Carreirasnrc implements Serializable {
             return false;
         }
         Carreirasnrc other = (Carreirasnrc) object;
-        if ((this.numSec == null && other.numSec != null) || (this.numSec != null && !this.numSec.equals(other.numSec))) {
-            return false;
-        }
-        return true;
+        return !((this.numSec == null && other.numSec != null) || (this.numSec != null && !this.numSec.equals(other.numSec)));
     }
 
     @Override
