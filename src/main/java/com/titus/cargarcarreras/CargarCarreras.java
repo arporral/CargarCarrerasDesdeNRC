@@ -30,7 +30,7 @@ import javax.persistence.Persistence;
 
 public class CargarCarreras {
 
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("carrerasPU");
+    static EntityManagerFactory emf = Persistence.createEntityManagerFactory("carrerasPU");
     static int num = 1;    
 
     public static void main(String[] args) throws IOException {
@@ -43,6 +43,8 @@ public class CargarCarreras {
         BufferedReader br = null;
         String fichero = null;
 
+        BorrarCarreras();
+        
         try {           
             archivo = new File("F:\\ANALISIS Y PROGRAMACION\\Programas java\\CargarCarrerasDesdeNRC\\ficheros\\activities.json");
             
@@ -53,7 +55,7 @@ public class CargarCarreras {
             while ((fichero = br.readLine()) != null) {
                 matriz = gson.fromJson(fichero, Matriz.class);
                 
-                if (matriz != null) {
+                if (matriz != null) {                    
                     CargarCarreras cc = new CargarCarreras(matriz);
                 } else {
                     System.out.println("Error. no hay datos.");
@@ -71,10 +73,23 @@ public class CargarCarreras {
         }              
     }
 
-    public CargarCarreras(Matriz matriz) {
+    public static void BorrarCarreras() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         
+        tx.begin();
+
+        int borradas = em.createQuery("delete from Carreirasnrc").executeUpdate();
+        System.out.println("Se han borrado " + borradas + " registros de la tabla Carreirasnrc");
+        
+        tx.commit();
+        em.close();  
+    }    
+    
+    public CargarCarreras(Matriz matriz) {        
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+                
         Map<String, String> sensa = new HashMap<>();         
         sensa.put("TIRED", "Cansado");
         sensa.put("SO_SO", "Normal");
@@ -118,18 +133,12 @@ public class CargarCarreras {
             Activities nrc = (Activities) it.next();
 
             // Fecha
-            //DateTimeFormatter formatEurope = DateTimeFormatter.ofPattern("yyyy-MM-dd");            
-            //LocalDate fecha = LocalDate.parse(formatEurope.format(new Date(nrc.getStart_epoch_ms().longValue())), formatEurope);
-            //LocalDate fecha = Instant.ofEpochMilli(nrc.getStart_epoch_ms().longValue()).atZone(ZoneId.systemDefault()).toLocalDate();
-            //LocalDate fecha = Instant.ofEpochMilli(nrc.getStart_epoch_ms().longValue()).atZone(ZoneId.of("UTC")).toLocalDate();
-            //System.out.println("Fecha = " + sdf.format(fecha));
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd");
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date fecha = new Date(nrc.getStart_epoch_ms().longValue());
             System.out.println("Fecha = " + fecha);
 
             // Duracion
-//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
             sdf = new SimpleDateFormat("HH:mm:ss");
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date duracion = new Date(nrc.getActive_duration_ms().longValue());
@@ -138,6 +147,7 @@ public class CargarCarreras {
             // Kms, calorias y pasos (se encuentran en el array de summaries).
             double kms = 0.0;
             double calorias = 0.0;
+            double peso = 0.0;
             int pasos = 0;
 
             for (Summaries summary : nrc.getSummaries()) {
@@ -163,6 +173,13 @@ public class CargarCarreras {
             String terreno = nrc.getTags().getTerrain();
             String clima = (nrc.getTags().getWeather() == null) ? nrc.getTags().getComNikeWeather() : nrc.getTags().getWeather();
             String temperatura = (nrc.getTags().getTemperature() == null) ? nrc.getTags().getComNikeTemperature() : nrc.getTags().getTemperature();
+            
+            if (nombre==null) {nombre="";}
+            if (sensaciones==null) {sensaciones="";}
+            if (calzado==null) {calzado="";}
+            if (terreno==null) {terreno="";}
+            if (clima==null) {clima="";}
+            if (temperatura==null) {temperatura="";}
             
             for (String key : sensa.keySet()) {
                 if (sensaciones != null && key.equals(sensaciones.toUpperCase())){
@@ -203,6 +220,7 @@ public class CargarCarreras {
             c.setCalzado(calzado);
             c.setCalorias(calorias);
             c.setPasos(pasos);
+            c.setPeso(peso);
             c.setTemperatura(temperatura);
             c.setTerreno(terreno);
             

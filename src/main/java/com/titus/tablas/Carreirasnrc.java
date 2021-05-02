@@ -86,7 +86,7 @@ public class Carreirasnrc implements Serializable {
     @Column(name = "temperatura")
     private String temperatura;
 
-    public Carreirasnrc() {
+    public Carreirasnrc() {        
     }
 
     public Carreirasnrc(Integer numSec) {
