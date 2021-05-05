@@ -110,7 +110,7 @@ public class CargarCarreras {
         Map<String, String> firme = new HashMap<>();         
         firme.put("ROAD", "Carretera");
         firme.put("TRAIL", "Trail");
-        firme.put("AMPED", "Sensacional");
+        firme.put("AMPED", "Carretera");
         firme.put("BEACH", "Playa");
         firme.put("TRACK", "Pista");
         
@@ -148,6 +148,7 @@ public class CargarCarreras {
             double kms = 0.0;
             double calorias = 0.0;
             double peso = 0.0;
+            double temperatura = 0.0;
             int pasos = 0;
 
             for (Summaries summary : nrc.getSummaries()) {
@@ -172,14 +173,22 @@ public class CargarCarreras {
             String calzado = (nrc.getTags().getShoes() == null) ? nrc.getTags().getShoe_id() : nrc.getTags().getShoes();
             String terreno = nrc.getTags().getTerrain();
             String clima = (nrc.getTags().getWeather() == null) ? nrc.getTags().getComNikeWeather() : nrc.getTags().getWeather();
-            String temperatura = (nrc.getTags().getTemperature() == null) ? nrc.getTags().getComNikeTemperature() : nrc.getTags().getTemperature();
+            String temp = (nrc.getTags().getTemperature() == null) ? nrc.getTags().getComNikeTemperature() : nrc.getTags().getTemperature().substring(0, 2);            
+            if (temp==null || temp.equals("TE")) {temp="0.0 ";}
+            System.out.println("Temp = " + temp);
+            temperatura=Double.parseDouble(temp);  
             
             if (nombre==null) {nombre="";}
             if (sensaciones==null) {sensaciones="";}
             if (calzado==null) {calzado="";}
             if (terreno==null) {terreno="";}
-            if (clima==null) {clima="";}
-            if (temperatura==null) {temperatura="";}
+            if (clima==null) {clima="";}            
+
+            // si las calorias vienen a cero calculamos las que debería haber consumido utilizando la media de calorias por km.
+            // he calculado que para todas mis carreras esa media es de 91,4 calorias/km
+            if (calorias == 0) {
+                calorias = kms * 91.4;
+            }
             
             for (String key : sensa.keySet()) {
                 if (sensaciones != null && key.equals(sensaciones.toUpperCase())){

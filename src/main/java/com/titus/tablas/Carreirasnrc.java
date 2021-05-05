@@ -84,7 +84,7 @@ public class Carreirasnrc implements Serializable {
     @Column(name = "clima")
     private String clima;
     @Column(name = "temperatura")
-    private String temperatura;
+    private Double temperatura;
 
     public Carreirasnrc() {        
     }
@@ -202,11 +202,11 @@ public class Carreirasnrc implements Serializable {
         this.clima = clima;
     }
 
-    public String getTemperatura() {
+    public Double getTemperatura() {
         return temperatura;
     }
 
-    public void setTemperatura(String temperatura) {
+    public void setTemperatura(Double temperatura) {
         this.temperatura = temperatura;
     }
 
