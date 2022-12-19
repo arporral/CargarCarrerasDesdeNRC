@@ -6,11 +6,9 @@
 package com.titus.tablas;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,24 +26,24 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author arpor
  */
 @Entity
-@Table(name = "carreirasnrc")
+@Table(name = "carrerasnrc")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Carreirasnrc.findAll", query = "SELECT c FROM Carreirasnrc c"),
-    @NamedQuery(name = "Carreirasnrc.findByNumSec", query = "SELECT c FROM Carreirasnrc c WHERE c.numSec = :numSec"),
-    @NamedQuery(name = "Carreirasnrc.findByFecha", query = "SELECT c FROM Carreirasnrc c WHERE c.fecha = :fecha"),
-    @NamedQuery(name = "Carreirasnrc.findByDuracion", query = "SELECT c FROM Carreirasnrc c WHERE c.duracion = :duracion"),
-    @NamedQuery(name = "Carreirasnrc.findByKms", query = "SELECT c FROM Carreirasnrc c WHERE c.kms = :kms"),
-    @NamedQuery(name = "Carreirasnrc.findByTipoDeEjercicio", query = "SELECT c FROM Carreirasnrc c WHERE c.tipoDeEjercicio = :tipoDeEjercicio"),
-    @NamedQuery(name = "Carreirasnrc.findByPeso", query = "SELECT c FROM Carreirasnrc c WHERE c.peso = :peso"),
-    @NamedQuery(name = "Carreirasnrc.findByCalorias", query = "SELECT c FROM Carreirasnrc c WHERE c.calorias = :calorias"),
-    @NamedQuery(name = "Carreirasnrc.findByPasos", query = "SELECT c FROM Carreirasnrc c WHERE c.pasos = :pasos"),
-    @NamedQuery(name = "Carreirasnrc.findBySensaciones", query = "SELECT c FROM Carreirasnrc c WHERE c.sensaciones = :sensaciones"),
-    @NamedQuery(name = "Carreirasnrc.findByCalzado", query = "SELECT c FROM Carreirasnrc c WHERE c.calzado = :calzado"),
-    @NamedQuery(name = "Carreirasnrc.findByTerreno", query = "SELECT c FROM Carreirasnrc c WHERE c.terreno = :terreno"),
-    @NamedQuery(name = "Carreirasnrc.findByClima", query = "SELECT c FROM Carreirasnrc c WHERE c.clima = :clima"),
-    @NamedQuery(name = "Carreirasnrc.findByTemperatura", query = "SELECT c FROM Carreirasnrc c WHERE c.temperatura = :temperatura")})
-public class Carreirasnrc implements Serializable {
+    @NamedQuery(name = "Carrerasnrc.findAll", query = "SELECT c FROM Carrerasnrc c"),
+    @NamedQuery(name = "Carrerasnrc.findByNumSec", query = "SELECT c FROM Carrerasnrc c WHERE c.numSec = :numSec"),
+    @NamedQuery(name = "Carrerasnrc.findByFecha", query = "SELECT c FROM Carrerasnrc c WHERE c.fecha = :fecha"),
+    @NamedQuery(name = "Carrerasnrc.findByDuracion", query = "SELECT c FROM Carrerasnrc c WHERE c.duracion = :duracion"),
+    @NamedQuery(name = "Carrerasnrc.findByKms", query = "SELECT c FROM Carrerasnrc c WHERE c.kms = :kms"),
+    @NamedQuery(name = "Carrerasnrc.findByTipoDeEjercicio", query = "SELECT c FROM Carrerasnrc c WHERE c.tipoDeEjercicio = :tipoDeEjercicio"),
+    @NamedQuery(name = "Carrerasnrc.findByPeso", query = "SELECT c FROM Carrerasnrc c WHERE c.peso = :peso"),
+    @NamedQuery(name = "Carrerasnrc.findByCalorias", query = "SELECT c FROM Carrerasnrc c WHERE c.calorias = :calorias"),
+    @NamedQuery(name = "Carrerasnrc.findByPasos", query = "SELECT c FROM Carrerasnrc c WHERE c.pasos = :pasos"),
+    @NamedQuery(name = "Carrerasnrc.findBySensaciones", query = "SELECT c FROM Carrerasnrc c WHERE c.sensaciones = :sensaciones"),
+    @NamedQuery(name = "Carrerasnrc.findByCalzado", query = "SELECT c FROM Carrerasnrc c WHERE c.calzado = :calzado"),
+    @NamedQuery(name = "Carrerasnrc.findByTerreno", query = "SELECT c FROM Carrerasnrc c WHERE c.terreno = :terreno"),
+    @NamedQuery(name = "Carrerasnrc.findByClima", query = "SELECT c FROM Carrerasnrc c WHERE c.clima = :clima"),
+    @NamedQuery(name = "Carrerasnrc.findByTemperatura", query = "SELECT c FROM Carrerasnrc c WHERE c.temperatura = :temperatura")})
+public class Carrerasnrc implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -86,14 +84,14 @@ public class Carreirasnrc implements Serializable {
     @Column(name = "temperatura")
     private Double temperatura;
 
-    public Carreirasnrc() {        
+    public Carrerasnrc() {        
     }
 
-    public Carreirasnrc(Integer numSec) {
+    public Carrerasnrc(Integer numSec) {
         this.numSec = numSec;
     }
 
-    public Carreirasnrc(Integer numSec, Date fecha) {
+    public Carrerasnrc(Integer numSec, Date fecha) {
         this.numSec = numSec;
         this.fecha = fecha;
     }
@@ -220,16 +218,16 @@ public class Carreirasnrc implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Carreirasnrc)) {
+        if (!(object instanceof Carrerasnrc)) {
             return false;
         }
-        Carreirasnrc other = (Carreirasnrc) object;
+        Carrerasnrc other = (Carrerasnrc) object;
         return !((this.numSec == null && other.numSec != null) || (this.numSec != null && !this.numSec.equals(other.numSec)));
     }
 
     @Override
     public String toString() {
-        return "com.titus.tablas.Carreirasnrc[ numSec=" + numSec + " ]";
+        return "com.titus.tablas.Carrerasnrc[ numSec=" + numSec + " ]";
     }
     
 }

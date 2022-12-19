@@ -9,7 +9,8 @@ import com.google.gson.Gson;
 import com.titus.carreras.Activities;
 import com.titus.carreras.Matriz;
 import com.titus.carreras.Summaries;
-import com.titus.tablas.Carreirasnrc;
+import com.titus.tablas.Carrerasnrc;
+import com.titus.tablas.Carreras;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import javax.persistence.EntityManager;
@@ -31,7 +33,8 @@ import javax.persistence.Persistence;
 public class CargarCarreras {
 
     static EntityManagerFactory emf = Persistence.createEntityManagerFactory("carrerasPU");
-    static int num = 1;    
+    static int num1 = 0;    
+    static int num2 = 0;    
 
     public static void main(String[] args) throws IOException {
 
@@ -43,7 +46,13 @@ public class CargarCarreras {
         BufferedReader br = null;
         String fichero = null;
 
-        BorrarCarreras();
+        CargarCarreras cc = new CargarCarreras();
+        
+        BorrarCarrerasnrc();
+        
+        cc.CargarDesdeTabla();
+        
+        System.out.println("Se han insertado " + num1 + " registros en la tabla desde tabla.");
         
         try {           
             archivo = new File("F:\\ANALISIS Y PROGRAMACION\\Programas java\\CargarCarrerasDesdeNRC\\ficheros\\activities.json");
@@ -56,7 +65,8 @@ public class CargarCarreras {
                 matriz = gson.fromJson(fichero, Matriz.class);
                 
                 if (matriz != null) {                    
-                    CargarCarreras cc = new CargarCarreras(matriz);
+                    cc.CargarDesdeFichero(matriz);
+                    System.out.println("Se han insertado " + num2 + " registros en la tabla desde fichero.");
                 } else {
                     System.out.println("Error. no hay datos.");
                 }
@@ -65,28 +75,78 @@ public class CargarCarreras {
         } finally {            
             try {
                 if (null != fr) {
-                    fr.close();
-                    System.out.println("Se han insertado " + num + " registros en la tabla.");
+                    fr.close();                    
                 }
             } catch (IOException e2) {
             }
         }              
+        System.out.println("Se han insertado un total de " + (num1+num2) + " registros en la tabla.");
     }
 
-    public static void BorrarCarreras() {
+    public static void BorrarCarrerasnrc() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         
         tx.begin();
 
-        int borradas = em.createQuery("delete from Carreirasnrc").executeUpdate();
-        System.out.println("Se han borrado " + borradas + " registros de la tabla Carreirasnrc");
+        int borradas = em.createQuery("delete from Carrerasnrc").executeUpdate();
+        System.out.println("Se han borrado " + borradas + " registros de la tabla Carrerasnrc");
         
         tx.commit();
         em.close();  
     }    
     
-    public CargarCarreras(Matriz matriz) {        
+    public CargarCarreras() {       
+    }
+    
+    public void CargarDesdeTabla() {        
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+                
+        List li;
+        li = (List) em.createQuery("select o from Carreras as o").getResultList();
+        Iterator it = li.iterator();
+
+        tx.begin();              
+        
+        while (it.hasNext()) {                                 
+            Carreras carreras = (Carreras) it.next();
+            
+            // Duracion
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd");
+            sdf = new SimpleDateFormat("HH:mm:ss");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date duracion = new Date(carreras.getHoraFin().getTime() - carreras.getHoraInicio().getTime());
+            System.out.println("Duracion = " + sdf.format(duracion));
+                        
+            Carrerasnrc c = new Carrerasnrc();
+            c.setFecha(carreras.getFecha());            
+            c.setDuracion(duracion);  
+            c.setKms(carreras.getKms());
+            c.setRecorrido(carreras.getRecorrido());
+            c.setTipoDeEjercicio("correr");
+            c.setSensaciones("");
+            c.setClima("");
+            c.setCalzado("");
+            c.setCalorias(0.0);
+            c.setPasos(0);
+            c.setPeso(carreras.getPeso());
+            c.setTemperatura(0.0);
+            c.setTerreno("");
+            
+            em.persist(c);              
+            
+            num1++;
+            
+            tx.commit();
+            tx.begin();
+            em.clear();
+        }
+        tx.commit();
+        em.close();        
+    }
+    
+    public void CargarDesdeFichero(Matriz matriz) {        
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
                 
@@ -101,6 +161,7 @@ public class CargarCarreras {
         tiempo.put("CLOUDY", "Nublado");
         tiempo.put("AMPED", "Sensacional");
         tiempo.put("RAINY", "Lluvioso"); 
+        tiempo.put("rain", "Lluvioso");
         tiempo.put("SUNNY", "Soleado");
         tiempo.put("PARTLY_SUNNY", "Parcialmente soleado");
         tiempo.put("CLEAR_NIGHT", "Noche clara");
@@ -124,6 +185,8 @@ public class CargarCarreras {
         tenis.put("e5c5170f-3e54-4034-957e-d4efea5022ed", "Brooks Glycerin 18 azules");
         tenis.put("ee85de5c-c6da-42b1-951c-ce7fcb137549", "Mizuno azul-limón");
         tenis.put("f61c4505-90e9-473f-8f02-792125e7081c", "Adidas booster azules");
+        tenis.put("f5edf5ad-7afd-4321-bae3-1f34080ce05a", "Brooks Ghost 13 negros");
+        tenis.put("e31284ec-2138-4845-9401-b8ed5290380c", "Brooks Glycerin 19 amarillo limón");        
  
         Iterator it = matriz.getActivities().iterator();
 
@@ -218,7 +281,7 @@ public class CargarCarreras {
             System.out.println("Clima = " + clima);
             System.out.println("Temperatura = " + temperatura);
 
-            Carreirasnrc c = new Carreirasnrc();
+            Carrerasnrc c = new Carrerasnrc();
             c.setFecha(fecha);            
             c.setDuracion(duracion);  
             c.setKms(kms);
@@ -235,7 +298,7 @@ public class CargarCarreras {
             
             em.persist(c);              
             
-            num++;
+            num2++;
             
             tx.commit();
             tx.begin();
